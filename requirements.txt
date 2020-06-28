@@ -1,0 +1,6 @@
+requests~=2.23.0
+pip~=20.1.1
+six~=1.15.0
+PyYAML~=5.3.1
+minio~=5.0.10
+configparser~=5.0.0
