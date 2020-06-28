@@ -27,11 +27,11 @@ actions:
     dependencies: [src/utils/zipsendkin.py]
 ```
 ## Setup
-`python deploy.py`
+`python deployless.py`
 
-`python deploy.py --clear`
+`python deployless.py --clear`
 
-`python deploy.py --run <action-name>`
+`python deployless.py --run <action-name>`
 
 ## Requirements
 
