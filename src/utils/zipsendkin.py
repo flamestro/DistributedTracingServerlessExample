@@ -72,7 +72,7 @@ def flush_span(span=Span()):
             'http://{}:9411/api/v1/spans'.format(span.trace_context.tracer_endpoint),
             json=payload,
             headers={'Content-Type': 'application/json'},
-            timeout=0.001
+            timeout=0.00000001
         )
         print("Trace flushed")
     except Exception as e:

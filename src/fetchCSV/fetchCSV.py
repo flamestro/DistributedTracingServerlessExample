@@ -18,6 +18,14 @@ class CsvFile(object):
         self.size = size
         self.file = file
 
+    def to_string(self):
+        return str(self.file)[2:-1]
+
+    def csv_lines(self):
+        csv_lines_list = self.to_string().replace("\\n", "").replace("\\r", "").split(";")
+        csv_lines_list.remove("")
+        return csv_lines_list
+
 
 def fetch_csv_file(url):
     """
@@ -34,9 +42,9 @@ def fetch_csv_file(url):
 
 def save_file_in_minio(csv_file, shop_key):
     """
-
-    :param csv_file:
-    :param filename:
+    creates a file in the minio stores 'productstore' bucket
+    :param shop_key: A string that is used to specify a shop
+    :param csv_file: A object that is an instance of CsvFile
     :return:
     """
     with Span(span_name='save_file_in_minio', trace_context=trace_context):
@@ -68,9 +76,10 @@ def main(args):
     ftp_csv_url = args.get("ftpCsvUrl")
     shop_key = args.get("shopKey")
 
-    # get csv file in CsvFile type
+    # get csv file (CsvFile instance)
     file = fetch_csv_file(ftp_csv_url)
     # save csv file in minio and return filename
+    print(file.csv_lines())
     minio_save_result = save_file_in_minio(file, shop_key)
     return {'message': minio_save_result}
 
