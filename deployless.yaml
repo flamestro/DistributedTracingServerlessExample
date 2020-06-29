@@ -11,10 +11,10 @@ actions:
     requirements: src/fetchCSV/requirements.txt
     main: src/fetchCSV/fetchCSV.py
     kind: python:3
-    dependencies: [src/utils/zipsendkin.py]
+    dependencies: [src/utils/zipsendkin.py, src/utils/injectit.py]
 
-  fetchProductImage:
-    main: src/fetchProductImage/fetchProductImage.py
+  fetchProductImages:
+    main: src/fetchProductImages/fetchProductImages.py
     kind: python:3
     dependencies: [src/utils/zipsendkin.py]
 
