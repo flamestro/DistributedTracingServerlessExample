@@ -11,12 +11,12 @@ actions:
     requirements: src/fetchCSV/requirements.txt
     main: src/fetchCSV/fetchCSV.py
     kind: python:3
-    dependencies: [src/utils/zipsendkin.py, src/utils/injectit.py]
+    dependencies: [src/utils/zipsendkin.py, src/utils/injectit.py, src/utils/structures.py]
 
   fetchProductImages:
     main: src/fetchProductImages/fetchProductImages.py
     kind: python:3
-    dependencies: [src/utils/zipsendkin.py]
+    dependencies: [src/utils/zipsendkin.py, src/utils/structures.py]
 
   unifyFormat:
     main: src/unifyFormat/unifyFormat.py

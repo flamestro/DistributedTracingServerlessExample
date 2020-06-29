@@ -14,32 +14,13 @@ try:
 except ImportError:
     from src.utils.injectit import invoke_action, invoke_action_async
 
+try:
+    from structures import CsvFile, ImageUrl
+except ImportError:
+    from src.utils.structures import CsvFile, ImageUrl
+
 trace_context = TraceContext()
 _DATA_STORE_ENDPOINT_ = '192.168.178.62'
-
-
-class CsvFile(object):
-    def __init__(self, file, size):
-        self.size = size
-        self.file = file
-
-    def to_string(self):
-        return str(self.file)[2:-1]
-
-    def csv_lines(self):
-        csv_lines_list = self.to_string().replace("\\n", "").replace("\\r", "").split(";")
-        csv_lines_list.remove("")
-        return csv_lines_list
-
-
-class ImageUrl(object):
-    def __init__(self, image_url, product_id):
-        self.image_url = image_url
-        self.product_id = product_id
-
-    def to_dict(self):
-        return {'imageUrl': self.image_url,
-                'externalProductId': self.product_id}
 
 
 def fetch_csv_file(csv_url):
@@ -87,12 +68,22 @@ def save_file_in_minio(csv_file, shop_key):
 
 
 def call_fetch_product_image_in_batches(csv_lines, max_batch_amount, shop_key):
+    """
+    Processes csv lines and extracts instances of the Class ImageUrl to a list of dicts.
+    Passes this list to asynchronously called fetchProductImages actions
+    :param csv_lines: A list of strings that represent all the lines of the handled csv file
+    :param max_batch_amount: The maximum amount of batches that should be handled by asynchronously called
+    fetchProductImages actions
+    :param shop_key: A string that represent a shop
+    :return:
+    """
     with Span(trace_context=trace_context, span_name='call_fetch_product_image_in_batches'):
         first_line = csv_lines.pop(0)
         image_urls_index = first_line.split(',').index('IMAGEURLS')
         id_index = first_line.split(',').index('ID')
 
         image_urls = []
+        # create ImageUrl instances
         for line in csv_lines:
             product_id = line.split(',')[id_index]
             extraced_image_url_list = line.split(',')[image_urls_index].replace('"', "").split('|')
@@ -102,14 +93,16 @@ def call_fetch_product_image_in_batches(csv_lines, max_batch_amount, shop_key):
         max_batch_size = int(len(image_urls) / max_batch_amount) + 1
         batches = [image_urls[x:x + max_batch_size] for x in range(0, len(image_urls), max_batch_size)]
 
+        # call fetchProductImages
         for x in range(0, max_batch_amount):
-            print(invoke_action_async('fetchProductImages',
-                                      os.environ.get('__OW_API_HOST',  "172.17.0.2:31001"),
-                                      os.environ.get('__OW_API_KEY', '23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP'),
-                                      data={'__OW_TRACE_ID': trace_context.trace_id,
-                                            'imageUrls': batches[x],
-                                            'shopKey': shop_key},
-                                      ignore_certs=True))
+            print("activationId:{}".format(invoke_action_async('fetchProductImages',
+                                                               os.environ.get('__OW_API_HOST', "172.17.0.2:31001"),
+                                                               os.environ.get('__OW_API_KEY',
+                                                                              '23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP'),
+                                                               data={'__OW_TRACE_ID': trace_context.trace_id,
+                                                                     'imageUrls': batches[x],
+                                                                     'shopKey': shop_key},
+                                                               ignore_certs=True)))
 
 
 def main(args):
@@ -131,7 +124,7 @@ def main(args):
         minio_save_result = save_file_in_minio(file, shop_key)
 
         call_fetch_product_image_in_batches(file.csv_lines(), 4, shop_key)
-        return {"message": str(minio_save_result), "__OW_TRACE_ID": trace_context.trace_id}
+        return {"filename": str(minio_save_result), "__OW_TRACE_ID": trace_context.trace_id}
     except Exception as e:
         print(e)
     return {'error': "could not fetch data properly"}
