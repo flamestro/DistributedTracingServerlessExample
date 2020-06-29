@@ -7,7 +7,8 @@ class CsvFile(object):
         return str(self.file)[2:-1]
 
     def csv_lines(self):
-        csv_lines_list = self.to_string().replace("\\n", "").replace("\\r", "").split(";")
+        csv_lines_list = self.to_string().split("\\n")
+        csv_lines_list = list(map(lambda x: x.replace("\\r", ""), csv_lines_list))
         csv_lines_list.remove("")
         return csv_lines_list
 

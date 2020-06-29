@@ -8,8 +8,8 @@ def generate_epoch_timestamp():
 
 
 def generate_id():
-    your_letters = 'abcdef1234567890'
-    return ''.join((random.choice(your_letters) for i in range(16)))
+    valid_chars = 'abcdef1234567890'
+    return ''.join((random.choice(valid_chars) for i in range(16)))
 
 
 class TraceContext(object):

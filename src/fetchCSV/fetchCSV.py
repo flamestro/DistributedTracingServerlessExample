@@ -86,7 +86,7 @@ def call_fetch_product_image_in_batches(csv_lines, max_batch_amount, shop_key):
         # create ImageUrl instances
         for line in csv_lines:
             product_id = line.split(',')[id_index]
-            extraced_image_url_list = line.split(',')[image_urls_index].replace('"', "").split('|')
+            extraced_image_url_list = line.split(',')[image_urls_index].split('|')
             count = 0
             for image_url in extraced_image_url_list:
                 image_urls.append(ImageUrl(image_url, product_id, count).to_dict())
@@ -97,6 +97,7 @@ def call_fetch_product_image_in_batches(csv_lines, max_batch_amount, shop_key):
 
         # call fetchProductImages
         for x in range(0, max_batch_amount):
+            print(batches[x])
             print("activationId:{}".format(invoke_action_async('fetchProductImages',
                                                                os.environ.get('__OW_API_HOST', "172.17.0.2:31001"),
                                                                os.environ.get('__OW_API_KEY',
@@ -118,7 +119,7 @@ def main(args):
                                      parent_id=args.get('__PARENT_TRACE_ID', ''),
                                      action_trace_id=os.environ.get('__OW_TRACE_ID', ''))
         # Initialize parameters
-        csv_url = args.get("csvUrl", "http://{}:9990/productdata/test.csv".format(_DATA_STORE_ENDPOINT_))
+        csv_url = args.get("csvUrl", "http://{}:9990/productdata/products.csv".format(_DATA_STORE_ENDPOINT_))
         shop_key = args.get("shopKey", "771d87188d568ddd")
         # get csv file (CsvFile instance)
         file = fetch_csv_file(csv_url)
@@ -133,4 +134,4 @@ def main(args):
 
 
 if __name__ == "__main__":
-    main({"csvUrl": "http://{}:9990/productdata/test.csv".format(_DATA_STORE_ENDPOINT_), "shopKey": "771d87188d568ddd"})
+    main({"csvUrl": "http://{}:9990/productdata/products.csv".format(_DATA_STORE_ENDPOINT_), "shopKey": "771d87188d568ddd"})

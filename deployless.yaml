@@ -16,9 +16,18 @@ actions:
   fetchProductImages:
     main: src/fetchProductImages/fetchProductImages.py
     kind: python:3
-    dependencies: [src/utils/zipsendkin.py, src/utils/structures.py]
+    dependencies: [src/utils/zipsendkin.py, src/utils/structures.py, src/utils/injectit.py]
+    requirements: src/fetchProductImages/requirements.txt
 
   unifyFormat:
     main: src/unifyFormat/unifyFormat.py
     kind: python:3
     dependencies: [src/utils/zipsendkin.py]
+
+  thumbnailGenerator:
+    main: src/dummyActions/thumbnailGenerator/thumbnailGenerator.py
+    kind: python:3
+    dependencies: [src/utils/zipsendkin.py]
+
+sequences:
+  update: [fetchCSV, unifyFormat]
