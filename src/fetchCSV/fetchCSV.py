@@ -87,8 +87,10 @@ def call_fetch_product_image_in_batches(csv_lines, max_batch_amount, shop_key):
         for line in csv_lines:
             product_id = line.split(',')[id_index]
             extraced_image_url_list = line.split(',')[image_urls_index].replace('"', "").split('|')
+            count = 0
             for image_url in extraced_image_url_list:
-                image_urls.append(ImageUrl(image_url, product_id).to_dict())
+                image_urls.append(ImageUrl(image_url, product_id, count).to_dict())
+                count += 1
         # create batches
         max_batch_size = int(len(image_urls) / max_batch_amount) + 1
         batches = [image_urls[x:x + max_batch_size] for x in range(0, len(image_urls), max_batch_size)]
