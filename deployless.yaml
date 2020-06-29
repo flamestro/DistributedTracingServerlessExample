@@ -3,15 +3,15 @@ service_name: tracing-example
 provider:
   platform: openwhisk
   ignore-certs: true
-  api-host: 172.17.0.3:31001
+  api-host: 172.17.0.2:31001
   auth: 23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP
 
 actions:
   fetchCSV:
+    requirements: src/fetchCSV/requirements.txt
     main: src/fetchCSV/fetchCSV.py
     kind: python:3
     dependencies: [src/utils/zipsendkin.py]
-    requirements: src/fetchCSV/requirements.txt
 
   fetchProductImage:
     main: src/fetchProductImage/fetchProductImage.py
