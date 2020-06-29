@@ -29,5 +29,10 @@ actions:
     kind: python:3
     dependencies: [src/utils/zipsendkin.py]
 
+  productsApi:
+    main: src/dummyActions/productsApi/productsApi.py
+    kind: python:3
+    dependencies: [src/utils/zipsendkin.py]
+
 sequences:
   update: [fetchCSV, unifyFormat]
