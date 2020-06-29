@@ -69,7 +69,7 @@ def call_thumbnail_generator(filename):
                                      ':123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP'),
                       data={'__OW_TRACE_ID': trace_context.trace_id,
                             '__PARENT_TRACE_ID': _WRAPPER_PARENT_SPAN_ID_,
-                            'imageName': filename},
+                            'imageNames': filename},
                       ignore_certs=True)
 
 
@@ -88,12 +88,14 @@ def main(args):
     with Span(span_name='fetch_images', trace_context=trace_context) as wrapper_context:
         global _WRAPPER_PARENT_SPAN_ID_
         _WRAPPER_PARENT_SPAN_ID_ = wrapper_context.id
+        thumbnails = []
         for image_url in image_urls:
             image_file = fetch_image_from_url(image_url.get("imageUrl"))
             filename = save_file_in_minio(image_file, shop_key, image_url.get("externalProductId"),
                                           image_url.get("order"))
             if int(image_url.get("order")) == 0:
-                call_thumbnail_generator(filename)
+                thumbnails.append(filename)
+        call_thumbnail_generator(thumbnails)
     return {"message": "hi"}
 
 

@@ -35,4 +35,5 @@ actions:
     dependencies: [src/utils/zipsendkin.py]
 
 sequences:
-  update: [fetchCSV, unifyFormat]
+  update:
+    components: [/guest/fetchCSV, /guest/unifyFormat]
