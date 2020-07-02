@@ -20,9 +20,9 @@ trace_context = TraceContext()
 _DATA_STORE_ENDPOINT_ = '192.168.178.62:9991'
 
 
-def fetch_csv_file(filename):
+def get_csv_file(filename):
     """
-    fetches a csv file from a given url and returns it
+    gets a csv file from a given url and returns it
     :return: returns a csv file as instance of CsvFile
     """
     filename = filename
@@ -50,10 +50,11 @@ def main(args):
                                  action_trace_id=os.environ.get('__OW_TRACE_ID', ''))
     # initialize parameters
     filename = args.get("filename")
-
+    get_csv_file(filename)
     with Span(span_name='specify_result', trace_context=trace_context):
         result = {'traceId': trace_context.trace_id, 'message': filename}
     return result
 
 
-print(fetch_csv_file("27b9c2f59dbd0ef5:771d87188d568ddd").file)
+if __name__ == '__main__':
+    print(get_csv_file("27b9c2f59dbd0ef5:771d87188d568ddd").file)

@@ -23,13 +23,23 @@ class TraceContext(object):
         self.action_trace_id = action_trace_id if trace_id != action_trace_id else trace_id
 
 
+class Message(object):
+    def __init__(self, key='', value=''):
+        self.key = key
+        self.value = value
+
+    def to_dict(self):
+        return {"key": self.key, "value": self.value}
+
+
 class Span(object):
-    def __init__(self, parent_id='', span_name='action-step', trace_context=TraceContext()):
+    def __init__(self, parent_id='', span_name='action-step', trace_context=TraceContext(), message=None):
         self.trace_context = trace_context
         self.id = generate_id()
         self.parent_id = parent_id if trace_context.parent_id == '' else trace_context.parent_id
         self.span_name = span_name
         self.timestamp = generate_epoch_timestamp()
+        self.message = message
 
     def __enter__(self):
         return self
@@ -42,6 +52,7 @@ def flush_span(span=Span()):
     try:
         start = span.timestamp
         duration = generate_epoch_timestamp() - start
+
         payload = [
             {
                 'id': span.id,
@@ -68,6 +79,8 @@ def flush_span(span=Span()):
                 ]
             }
         ]
+        if span.message is not None:
+            payload[0].get("binaryAnnotations").append(span.message.to_dict())
         requests.post(
             'http://{}:9411/api/v1/spans'.format(span.trace_context.tracer_endpoint),
             json=payload,

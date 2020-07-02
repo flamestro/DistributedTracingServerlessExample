@@ -57,7 +57,7 @@ def generate_name():
     return ''.join((random.choice(valid_texts) for i in range(5)))
 
 
-def generate_csv(rows=1):
+def generate_csv(filename="products.csv", rows=1):
     with open('products.csv', 'w', newline='') as file:
         fieldnames = ["PNAME", "PDESCRIPTION", "PPRICE", "DTIME", "DTEXT", "QUANTITY", "ID", "IMAGEURLS"]
         writer = csv.DictWriter(file, fieldnames=fieldnames)
@@ -82,7 +82,6 @@ def generate_csv(rows=1):
 def save_file_in_minio(csv_file):
     """
     creates a file in the minio stores 'productstore' bucket
-    :param shop_key: A string that is used to specify a shop
     :param csv_file: A object that is an instance of CsvFile
     :return:
     """
@@ -102,4 +101,4 @@ def save_file_in_minio(csv_file):
 
 
 if __name__ == '__main__':
-    generate_csv(100)
+    generate_csv(rows=10)

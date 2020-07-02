@@ -5,9 +5,9 @@ from minio import Minio
 from minio.error import ResponseError
 
 try:
-    from zipsendkin import Span, TraceContext, generate_id
+    from zipsendkin import Span, TraceContext, generate_id, Message
 except ImportError:
-    from src.utils.zipsendkin import Span, TraceContext, generate_id
+    from src.utils.zipsendkin import Span, TraceContext, generate_id, Message
 try:
     from structures import File, ImageUrl
 except ImportError:
@@ -61,7 +61,8 @@ def fetch_image_from_url(image_url):
 
 
 def call_thumbnail_generator(filename):
-    with Span(span_name='call_thumbnail_generator', trace_context=trace_context, parent_id=_WRAPPER_PARENT_SPAN_ID_):
+    with Span(span_name='call_thumbnail_generator', trace_context=trace_context, parent_id=_WRAPPER_PARENT_SPAN_ID_,
+              message=Message(key="Filename", value=filename)):
         invoke_action('thumbnailGenerator',
                       os.environ.get('__OW_API_HOST', "172.17.0.2:31001"),
                       os.environ.get('__OW_API_KEY',

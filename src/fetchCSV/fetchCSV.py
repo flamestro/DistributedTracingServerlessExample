@@ -126,7 +126,7 @@ def main(args):
         # save csv file in minio and return filename
         minio_save_result = save_file_in_minio(file, shop_key)
 
-        call_fetch_product_image_in_batches(file.csv_lines(), 4, shop_key)
+        call_fetch_product_image_in_batches(file.csv_lines(), 2, shop_key)
         return {"filename": str(minio_save_result), "__OW_TRACE_ID": trace_context.trace_id}
     except Exception as e:
         print(e)

@@ -18,6 +18,7 @@ actions:
     kind: python:3
     dependencies: [src/utils/zipsendkin.py, src/utils/structures.py, src/utils/injectit.py]
     requirements: src/fetchProductImages/requirements.txt
+    timeout: 300000
 
   unifyFormat:
     main: src/unifyFormat/unifyFormat.py
