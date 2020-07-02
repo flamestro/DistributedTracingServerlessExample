@@ -39,6 +39,10 @@ def get_csv_file(filename):
     return csv_file
 
 
+def process_products(csv_lines):
+    pass
+
+
 def main(args):
     # Initialize trace context
     global trace_context
@@ -50,7 +54,8 @@ def main(args):
                                  action_trace_id=os.environ.get('__OW_TRACE_ID', ''))
     # initialize parameters
     filename = args.get("filename")
-    get_csv_file(filename)
+    csv_file = get_csv_file(filename)
+    products = process_products(csv_file.csv_lines())
     with Span(span_name='specify_result', trace_context=trace_context):
         result = {'traceId': trace_context.trace_id, 'message': filename}
     return result
