@@ -87,15 +87,16 @@ def main(args):
     image_urls = args.get("imageUrls", [])
     shop_key = args.get("shopKey", "771d87188d568ddd")
     with Span(span_name='fetch_images', trace_context=trace_context) as wrapper_context:
-        global _WRAPPER_PARENT_SPAN_ID_
-        _WRAPPER_PARENT_SPAN_ID_ = wrapper_context.id
         thumbnails = []
         for image_url in image_urls:
-            image_file = fetch_image_from_url(image_url.get("imageUrl"))
-            filename = save_file_in_minio(image_file, shop_key, image_url.get("externalProductId"),
-                                          image_url.get("order"))
-            if int(image_url.get("order")) == 0:
-                thumbnails.append(filename)
+            with Span(span_name='fetch_images', trace_context=trace_context, parent_id=wrapper_context.id) as wrapper_image_context:
+                global _WRAPPER_PARENT_SPAN_ID_
+                _WRAPPER_PARENT_SPAN_ID_ = wrapper_image_context.id
+                image_file = fetch_image_from_url(image_url.get("imageUrl"))
+                filename = save_file_in_minio(image_file, shop_key, image_url.get("externalProductId"),
+                                              image_url.get("order"))
+                if int(image_url.get("order")) == 0:
+                    thumbnails.append(filename)
         call_thumbnail_generator(thumbnails)
     return {"message": "hi"}
 

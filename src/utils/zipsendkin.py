@@ -14,7 +14,7 @@ def generate_id():
 
 class TraceContext(object):
     def __init__(self, trace_id=generate_id(), service_name='action-name',
-                 transaction_id='', tracer_endpoint='localhost:9411', parent_id='', action_trace_id=''):
+                 transaction_id='', tracer_endpoint='localhost', parent_id='', action_trace_id=''):
         self.trace_id = trace_id
         self.service_name = service_name
         self.transaction_id = transaction_id

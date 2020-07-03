@@ -12,6 +12,7 @@ actions:
     main: src/fetchCSV/fetchCSV.py
     kind: python:3
     dependencies: [src/utils/zipsendkin.py, src/utils/injectit.py, src/utils/structures.py]
+    memory: 128
 
   fetchProductImages:
     main: src/fetchProductImages/fetchProductImages.py
@@ -19,21 +20,26 @@ actions:
     dependencies: [src/utils/zipsendkin.py, src/utils/structures.py, src/utils/injectit.py]
     requirements: src/fetchProductImages/requirements.txt
     timeout: 300000
+    memory: 128
 
   unifyFormat:
     main: src/unifyFormat/unifyFormat.py
     kind: python:3
-    dependencies: [src/utils/zipsendkin.py]
+    dependencies: [src/utils/zipsendkin.py, src/utils/structures.py, src/utils/injectit.py]
+    requirements: src/unifyFormat/requirements.txt
+    memory: 128
 
   thumbnailGenerator:
     main: src/dummyActions/thumbnailGenerator/thumbnailGenerator.py
     kind: python:3
     dependencies: [src/utils/zipsendkin.py]
+    memory: 128
 
   productsApi:
     main: src/dummyActions/productsApi/productsApi.py
     kind: python:3
     dependencies: [src/utils/zipsendkin.py]
+    memory: 128
 
 sequences:
   update:

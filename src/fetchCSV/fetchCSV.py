@@ -10,9 +10,9 @@ except ImportError:
     from src.utils.zipsendkin import Span, TraceContext, generate_id
 
 try:
-    from injectit import invoke_action, invoke_action_async
+    from injectit import invoke_action_async
 except ImportError:
-    from src.utils.injectit import invoke_action, invoke_action_async
+    from src.utils.injectit import invoke_action_async
 
 try:
     from structures import CsvFile, ImageUrl
@@ -127,11 +127,13 @@ def main(args):
         minio_save_result = save_file_in_minio(file, shop_key)
 
         call_fetch_product_image_in_batches(file.csv_lines(), 2, shop_key)
-        return {"filename": str(minio_save_result), "__OW_TRACE_ID": trace_context.trace_id}
+        print(minio_save_result)
+        return {"filename": str(minio_save_result), "shopKey": shop_key, "__OW_TRACE_ID": trace_context.trace_id}
     except Exception as e:
         print(e)
-    return {'error': "could not fetch data properly"}
+        return {'error': "could not fetch data properly {}".format(e)}
 
 
 if __name__ == "__main__":
-    main({"csvUrl": "http://{}:9990/productdata/products.csv".format(_DATA_STORE_ENDPOINT_), "shopKey": "771d87188d568ddd"})
+    main({"csvUrl": "http://{}:9990/productdata/products.csv".format(_DATA_STORE_ENDPOINT_),
+          "shopKey": "771d87188d568ddd"})

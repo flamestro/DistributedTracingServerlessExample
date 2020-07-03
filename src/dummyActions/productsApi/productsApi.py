@@ -13,6 +13,6 @@ def main(args):
                                  tracer_endpoint='192.168.178.62',
                                  parent_id=args.get('__PARENT_TRACE_ID', ''),
                                  action_trace_id=os.environ.get('__OW_TRACE_ID', ''))
-    with Span(span_name='process_product', trace_context=trace_context):
+    with Span(span_name='publish_products', trace_context=trace_context):
         result = {'message': 'Hello World!'}
     return result
