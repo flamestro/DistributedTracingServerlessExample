@@ -60,9 +60,14 @@ def fetch_image_from_url(image_url):
         return img_file
 
 
-def call_thumbnail_generator(filename):
+def call_thumbnail_generator(filenames):
+    """
+    Calls the thumbnail generator for batches of filenames that qualify as thumbnail
+    :param filenames: a list of filenames inside the productimages bucket
+    :return: void
+    """
     with Span(span_name='call_thumbnail_generator', trace_context=trace_context, parent_id=_WRAPPER_PARENT_SPAN_ID_,
-              message=Message(key="Filename", value=filename)) as parent:
+              message=Message(key="Filenames", value=filenames)) as parent:
         invoke_action('thumbnailGenerator',
                       os.environ.get('__OW_API_HOST', "172.17.0.2:31001"),
                       os.environ.get('__OW_API_KEY',
@@ -70,7 +75,7 @@ def call_thumbnail_generator(filename):
                                      ':123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP'),
                       data={'__OW_TRACE_ID': trace_context.trace_id,
                             '__PARENT_TRACE_ID': parent.id,
-                            'imageNames': filename},
+                            'imageNames': filenames},
                       ignore_certs=True)
 
 
