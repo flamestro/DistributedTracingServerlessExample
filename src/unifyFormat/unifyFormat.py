@@ -170,9 +170,7 @@ def main(args):
                           data={'__OW_TRACE_ID': trace_context.trace_id,
                                 'products': products},
                           ignore_certs=True)
-        with Span(span_name='specify_result', trace_context=trace_context):
-            result = {'__OW_TRACE_ID': trace_context.trace_id, 'products': products.get('products', [])}
-        return result
+        return {'__OW_TRACE_ID': trace_context.trace_id, 'products': products.get('products', [])}
     except Exception as e:
         return {"error": "{}".format(e)}
 

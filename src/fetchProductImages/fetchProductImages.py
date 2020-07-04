@@ -62,14 +62,14 @@ def fetch_image_from_url(image_url):
 
 def call_thumbnail_generator(filename):
     with Span(span_name='call_thumbnail_generator', trace_context=trace_context, parent_id=_WRAPPER_PARENT_SPAN_ID_,
-              message=Message(key="Filename", value=filename)):
+              message=Message(key="Filename", value=filename)) as parent:
         invoke_action('thumbnailGenerator',
                       os.environ.get('__OW_API_HOST', "172.17.0.2:31001"),
                       os.environ.get('__OW_API_KEY',
                                      '23bc46b1-71f6-4ed5-8c54-816aa4f8c502'
                                      ':123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP'),
                       data={'__OW_TRACE_ID': trace_context.trace_id,
-                            '__PARENT_TRACE_ID': _WRAPPER_PARENT_SPAN_ID_,
+                            '__PARENT_TRACE_ID': parent.id,
                             'imageNames': filename},
                       ignore_certs=True)
 
@@ -89,7 +89,7 @@ def main(args):
     with Span(span_name='fetch_images', trace_context=trace_context) as wrapper_context:
         thumbnails = []
         for image_url in image_urls:
-            with Span(span_name='fetch_images', trace_context=trace_context, parent_id=wrapper_context.id) as wrapper_image_context:
+            with Span(span_name='fetch_image', trace_context=trace_context, parent_id=wrapper_context.id) as wrapper_image_context:
                 global _WRAPPER_PARENT_SPAN_ID_
                 _WRAPPER_PARENT_SPAN_ID_ = wrapper_image_context.id
                 image_file = fetch_image_from_url(image_url.get("imageUrl"))
