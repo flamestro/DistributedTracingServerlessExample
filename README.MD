@@ -13,6 +13,9 @@ To clear specified actions do
 To run an action do
 `python deployless.py --run <action-name>`
 
+To get the latest logs of an action do
+`python deployless.py --logs <action-name>`
+
 ## Requirements
 
 Actions can have custom requirements which need to be specified in the deployless.yaml.
