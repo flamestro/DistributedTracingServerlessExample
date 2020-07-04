@@ -170,7 +170,7 @@ def main(args):
                           data={'__OW_TRACE_ID': trace_context.trace_id,
                                 'products': products},
                           ignore_certs=True)
-        return {'__OW_TRACE_ID': trace_context.trace_id, 'products': products.get('products', [])}
+        return {'__OW_TRACE_ID': trace_context.trace_id, 'products': products.get('products', []), "status": "success"}
     except Exception as e:
         return {"error": "{}".format(e)}
 
