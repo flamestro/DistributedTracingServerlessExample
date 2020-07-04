@@ -13,9 +13,14 @@ def generate_id():
 
 
 class TraceContext(object):
-    def __init__(self, trace_id=generate_id(), service_name='action-name',
-                 transaction_id='', tracer_endpoint='localhost', parent_id='', action_trace_id=''):
-        self.trace_id = trace_id
+    def __init__(self, trace_id=None, service_name='action-name',
+                 transaction_id='', tracer_endpoint='localhost', parent_id='', action_trace_id='', sampling_rate=1.0):
+        if trace_id is None:
+            sampled = random.randint(0, 100)
+            if sampled <= int(sampling_rate * 100):
+                self.trace_id = generate_id()
+        else:
+            self.trace_id = trace_id
         self.service_name = service_name
         self.transaction_id = transaction_id
         self.tracer_endpoint = tracer_endpoint
@@ -45,7 +50,8 @@ class Span(object):
         return self
 
     def __exit__(self, exc_type, exc_value, tb):
-        flush_span(self)
+        if self.trace_context.trace_id is not None:
+            flush_span(self)
 
 
 def flush_span(span=Span()):

@@ -42,5 +42,5 @@ actions:
     memory: 128
 
 sequences:
-  update:
+  productUpdate:
     components: [/guest/fetchCSV, /guest/unifyFormat]
