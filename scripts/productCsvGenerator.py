@@ -7,7 +7,17 @@ from minio import Minio, ResponseError
 
 from src.utils.structures import CsvFile
 
-_DATA_STORE_ENDPOINT_ = '192.168.178.62'
+
+_EXTERNAL_DATA_STORE_ENDPOINT_ = '192.168.178.62:9990'
+_INTERNAL_DATA_STORE_ENDPOINT_ = '192.168.178.62:9991'
+# MinIO ACCESS DATA
+_MINIO_ACCESS_KEY_ = "AKIAIOSFODNN7EXAMPLE"
+_MINIO_SECRET_KEY_ = "wJalrXUtnFEMIK7MDENGbPxRfiCYEXAMPLEKEY"
+# Endpoint and auth OpenWhisk (Important to test and debug locally, this should not be done on production environments)
+_OPENWHISK_HOST_ENDPOINT_ = '172.17.0.2:31001'
+_OPENWHISK_KEY_ = "23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP"
+# ZipKin Collector Endpoint
+_TRACER_ENDPOINT_ = '192.168.178.62'
 
 
 def generate_external_id():
@@ -86,9 +96,9 @@ def save_file_in_minio(csv_file):
     :return:
     """
     filename = "products.csv"
-    minio_client = Minio('{}:9990'.format(_DATA_STORE_ENDPOINT_),
-                         access_key='AKIAIOSFODNN7EXAMPLE',
-                         secret_key='wJalrXUtnFEMIK7MDENGbPxRfiCYEXAMPLEKEY',
+    minio_client = Minio('{}'.format(_EXTERNAL_DATA_STORE_ENDPOINT_),
+                         access_key=_MINIO_ACCESS_KEY_,
+                         secret_key=_MINIO_SECRET_KEY_,
                          secure=False)
     try:
         with io.BytesIO(csv_file.file) as file:

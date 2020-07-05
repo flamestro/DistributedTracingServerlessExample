@@ -17,9 +17,20 @@ try:
 except ImportError:
     from src.utils.injectit import invoke_action
 
+# global trace context object
 trace_context = TraceContext()
+
+_EXTERNAL_DATA_STORE_ENDPOINT_ = '192.168.178.62:9990'
+_INTERNAL_DATA_STORE_ENDPOINT_ = '192.168.178.62:9991'
+# MinIO ACCESS DATA
+_MINIO_ACCESS_KEY_ = "AKIAIOSFODNN7EXAMPLE"
+_MINIO_SECRET_KEY_ = "wJalrXUtnFEMIK7MDENGbPxRfiCYEXAMPLEKEY"
+# Endpoint and auth OpenWhisk (Important to test and debug locally, this should not be done on production environments)
+_OPENWHISK_HOST_ENDPOINT_ = '172.17.0.2:31001'
+_OPENWHISK_KEY_ = "23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP"
+# ZipKin Collector Endpoint
+_TRACER_ENDPOINT_ = '192.168.178.62'
 _WRAPPER_PARENT_SPAN_ID_ = ""
-_DATA_STORE_ENDPOINT_ = '192.168.178.62'
 
 
 def save_file_in_minio(img_file, shop_key, product_id, order):
@@ -33,9 +44,9 @@ def save_file_in_minio(img_file, shop_key, product_id, order):
     """
     with Span(span_name='save_file_in_minio', trace_context=trace_context, parent_id=_WRAPPER_PARENT_SPAN_ID_):
         filename = "{}:{}:{}".format(order, product_id, shop_key)
-        minio_client = Minio('{}:9991'.format(_DATA_STORE_ENDPOINT_),
-                             access_key='AKIAIOSFODNN7EXAMPLE',
-                             secret_key='wJalrXUtnFEMIK7MDENGbPxRfiCYEXAMPLEKEY',
+        minio_client = Minio('{}'.format(_INTERNAL_DATA_STORE_ENDPOINT_),
+                             access_key=_MINIO_ACCESS_KEY_,
+                             secret_key=_MINIO_SECRET_KEY_,
                              secure=False)
         try:
             with io.BytesIO(img_file.file) as file:
@@ -69,10 +80,8 @@ def call_thumbnail_generator(filenames):
     with Span(span_name='call_thumbnail_generator', trace_context=trace_context, parent_id=_WRAPPER_PARENT_SPAN_ID_,
               message=Message(key="Filenames", value=filenames)) as parent:
         invoke_action('thumbnailGenerator',
-                      os.environ.get('__OW_API_HOST', "172.17.0.2:31001"),
-                      os.environ.get('__OW_API_KEY',
-                                     '23bc46b1-71f6-4ed5-8c54-816aa4f8c502'
-                                     ':123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP'),
+                      os.environ.get('__OW_API_HOST', _OPENWHISK_HOST_ENDPOINT_),
+                      os.environ.get('__OW_API_KEY', _OPENWHISK_KEY_),
                       data={'__OW_TRACE_ID': trace_context.trace_id,
                             '__PARENT_TRACE_ID': parent.id,
                             'imageNames': filenames},

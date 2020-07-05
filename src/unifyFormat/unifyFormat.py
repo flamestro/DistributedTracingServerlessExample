@@ -18,8 +18,18 @@ try:
 except ImportError:
     from src.utils.injectit import invoke_action
 
+# global trace context object
 trace_context = TraceContext()
-_DATA_STORE_ENDPOINT_ = '192.168.178.62:9991'
+
+_INTERNAL_DATA_STORE_ENDPOINT_ = '192.168.178.62:9991'
+# MinIO ACCESS DATA
+_MINIO_ACCESS_KEY_ = "AKIAIOSFODNN7EXAMPLE"
+_MINIO_SECRET_KEY_ = "wJalrXUtnFEMIK7MDENGbPxRfiCYEXAMPLEKEY"
+# Endpoint and auth OpenWhisk (Important to test and debug locally, this should not be done on production environments)
+_OPENWHISK_HOST_ENDPOINT_ = '172.17.0.2:31001'
+_OPENWHISK_KEY_ = "23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP"
+# ZipKin Collector Endpoint
+_TRACER_ENDPOINT_ = '192.168.178.62'
 
 
 def get_csv_file(filename):
@@ -30,10 +40,10 @@ def get_csv_file(filename):
     with Span(span_name='fetch_csv_file', trace_context=trace_context):
         filename = filename
         bucket = "productstore"
-        endpoint = _DATA_STORE_ENDPOINT_
+        endpoint = _INTERNAL_DATA_STORE_ENDPOINT_
         minio_client = Minio('{}'.format(endpoint),
-                             access_key='AKIAIOSFODNN7EXAMPLE',
-                             secret_key='wJalrXUtnFEMIK7MDENGbPxRfiCYEXAMPLEKEY',
+                             access_key=_MINIO_ACCESS_KEY_,
+                             secret_key=_MINIO_SECRET_KEY_,
                              secure=False)
         file = minio_client.get_object(bucket, filename)
         with io.BytesIO(file.read()) as f:
@@ -151,7 +161,7 @@ def main(args):
         trace_context = TraceContext(trace_id=args.get('__OW_TRACE_ID', os.environ.get('__OW_TRACE_ID', generate_id())),
                                      service_name='unifyFormat',
                                      transaction_id=os.environ.get('__OW_TRANSACTION_ID', ''),
-                                     tracer_endpoint='192.168.178.62',
+                                     tracer_endpoint=_TRACER_ENDPOINT_,
                                      parent_id=args.get('__PARENT_TRACE_ID', ''),
                                      action_trace_id=os.environ.get('__OW_TRACE_ID', ''))
         # initialize parameters
@@ -163,19 +173,20 @@ def main(args):
         # TODO: Logic for failures (check status)
         with Span(span_name='invoke_productsApi', trace_context=trace_context):
             invoke_action("productsApi",
-                          os.environ.get('__OW_API_HOST', "172.17.0.2:31001"),
-                          os.environ.get('__OW_API_KEY',
-                                         '23bc46b1-71f6-4ed5-8c54-816aa4f8c502'
-                                         ':123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP'),
+                          os.environ.get('__OW_API_HOST', _OPENWHISK_HOST_ENDPOINT_),
+                          os.environ.get('__OW_API_KEY', _OPENWHISK_KEY_),
                           data={'__OW_TRACE_ID': trace_context.trace_id,
                                 'products': products},
                           ignore_certs=True)
-        return {'__OW_TRACE_ID': trace_context.trace_id, 'products': products.get('products', []), "status": "success"}
+        return {'__OW_TRACE_ID': trace_context.trace_id, 'products': products.get('products', [])}
     except Exception as e:
         return {"error": "{}".format(e)}
 
 
 if __name__ == '__main__':
+    """
+    Used to locally run and debug this action -> Not executed by when called by OpenWhisk
+    """
     main({
         "filename": "48e5b5a8f8f1e68c:771d87188d568ddd",
         "shopKey": "771d87188d568ddd"
