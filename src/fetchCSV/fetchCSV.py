@@ -129,8 +129,8 @@ def main(args):
                                      parent_id=args.get('__PARENT_TRACE_ID', ''),
                                      action_trace_id=os.environ.get('__OW_TRACE_ID', ''))
         # Initialize parameters
-        csv_url = args.get("csvUrl")
-        shop_key = args.get("shopKey")
+        csv_url = args.get("csvUrl", "http://{}/productdata/products.csv".format(_EXTERNAL_DATA_STORE_ENDPOINT_))
+        shop_key = args.get("shopKey", "771d87188d568ddd")
         # get csv file (CsvFile instance)
         file = fetch_csv_file(csv_url)
         # save csv file in minio and return filename
@@ -145,5 +145,5 @@ def main(args):
 
 
 if __name__ == "__main__":
-    main({"csvUrl": "http://{}:9990/productdata/products.csv".format(_EXTERNAL_DATA_STORE_ENDPOINT_),
+    main({"csvUrl": "http://{}/productdata/products.csv".format(_EXTERNAL_DATA_STORE_ENDPOINT_),
           "shopKey": "771d87188d568ddd"})

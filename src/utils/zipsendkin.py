@@ -34,7 +34,7 @@ class Message(object):
         self.value = value
 
     def to_dict(self):
-        return {"key": self.key, "value": self.value}
+        return {"key": str(self.key), "value": str(self.value)}
 
 
 class Span(object):
@@ -50,6 +50,7 @@ class Span(object):
         return self
 
     def __exit__(self, exc_type, exc_value, tb):
+        self.message = Message("error", "ErrorType: {}, ErrorMessage: {}".format(exc_type, exc_value))
         if self.trace_context.trace_id is not None:
             flush_span(self)
 
